@@ -75,17 +75,27 @@ black_marble.png = 24 MB NASA sourced image for example host image file
 
 # Example
 
-Encoding:
+## Encoding:
 ![Alt Text](https://github.com/darkiron71/stegAES/blob/main/Encoding_example.png)
 
-Decoding:
+## Decoding:
 ![Alt Text](https://github.com/darkiron71/stegAES/blob/main/Decoding_example.png)
 
-Host Image before Encoding: 
+## Host Image before Encoding: 
 ![Alt Text](https://github.com/darkiron71/stegAES/blob/main/black_marble.png)
 
-Host Image after Encoding:
+## Host Image after Encoding:
 ![Alt Text](https://github.com/darkiron71/stegAES/blob/main/black_marble_encoded_1.png)
 
-Decoded Files: 
+## Decoded Files: 
 
+![Alt Text](https://github.com/darkiron71/stegAES/blob/main/Decoded_zip.png)
+
+
+![Alt Text](https://github.com/darkiron71/stegAES/blob/main/Secret_message_file.png)
+
+
+![Alt Text](https://github.com/darkiron71/stegAES/blob/main/Secret_Message_decoded_file.png)
+
+
+![Alt Text](https://github.com/darkiron71/stegAES/blob/main/Files_inside_zip.png)
