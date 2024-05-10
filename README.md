@@ -76,3 +76,4 @@ black_marble.png = 24 MB NASA sourced image for example host image file
 # Example
 
 Encoding
+![Alt Text] 
