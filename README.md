@@ -56,6 +56,8 @@ This versatile tool finds applications in secure communication, data hiding, and
     --image = "Path to the image file"
     --key = "Path to the key file"
     --save = "Save the decrypted message to a file"
+    endode = "Tells program to execute encoding action"
+    decode = "Tells program to execute decoding action"
 
 # Extras 
 
