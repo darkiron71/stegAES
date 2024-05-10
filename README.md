@@ -18,7 +18,7 @@
 
 ## About
 
-stegAES supports embedding both text-based messages and zip files into an image. (Do keep in mind the amount of data you can embeed will depend on host image file size. The larger the host image file, the more data you can store.) 
+stegAES supports embedding both text-based messages and zip files into an image. (Do keep in mind the amount of data you can embed will depend on host image file size. The larger the host image file, the more data you can store.) 
 
 The stegAES.py script offers a comprehensive solution combining AES encryption with steganography techniques, designed for secure message transmission and concealed data embedding within images. Here's a breakdown of its functionalities:
 
