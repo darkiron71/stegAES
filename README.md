@@ -43,7 +43,7 @@ This versatile tool finds applications in secure communication, data hiding, and
 
   Encoding: 
 
-      python3 stegAES.py --image <image_file.png> --message "Your Secret Message" --zip <zipaname.zip> --key aes_key.txt encode
+      python3 stegAES.py --image <image_file.png> --message "Your Secret Message" --zip <zipaname.zip> (optional) --key aes_key.txt encode
 
   Decoding: 
 
