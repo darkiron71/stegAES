@@ -61,7 +61,7 @@ This versatile tool finds applications in secure communication, data hiding, and
 
 # Extras 
 
-dummydata.py= will auto generate a dummy zip file specified in MB. In the example below this will create 2mb dummydata zip file 
+dummydata.py= will auto generate a dummy zip file specified in MB. In the example below this will create 2MB dummydata zip file 
 
     python3 dummydata.py <#>
     ex: python3 dummydata.py 2
