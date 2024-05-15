@@ -5,25 +5,29 @@ import os
 from tqdm import tqdm
 import secrets
 from Crypto.Random import get_random_bytes
+import base64
 
 class AESCipher:
     def __init__(self, key):
         if len(key) != 32:
             raise ValueError("Key must be 32 characters.")
-        self.key = key
-        self.iv = get_random_bytes(16)  # Generate a random IV for CBC mode
-        self.cipher = AES.new(self.key.encode(), AES.MODE_CBC, self.iv)
+        self.key = key.encode('utf-8')  # Ensure the key is in bytes
 
     def encrypt(self, msg):
         msg = msg.encode('utf-8')  # Convert message to bytes
         padded_msg = self._pad(msg)
-        return self.iv + self.cipher.encrypt(padded_msg)
+        iv = get_random_bytes(16)  # Generate a random IV for CBC mode
+        cipher = AES.new(self.key, AES.MODE_CBC, iv)
+        return iv + cipher.encrypt(padded_msg)
 
     def decrypt(self, cipher_text):
         iv = cipher_text[:16]  # Extract IV from cipher text
-        cipher = AES.new(self.key.encode(), AES.MODE_CBC, iv)
+        cipher = AES.new(self.key, AES.MODE_CBC, iv)
         decrypted_msg = cipher.decrypt(cipher_text[16:])
-        unpadded_msg = self._unpad(decrypted_msg).decode('utf-8')
+        try:
+            unpadded_msg = self._unpad(decrypted_msg).decode('utf-8')
+        except (UnicodeDecodeError, ValueError):
+            raise ValueError("Incorrect decryption key or corrupted data.")
         return unpadded_msg
 
     def _pad(self, msg):
@@ -31,7 +35,10 @@ class AESCipher:
         return msg + bytes([padding_len] * padding_len)
 
     def _unpad(self, msg):
-        return msg[:-msg[-1]]
+        padding_len = msg[-1]
+        if padding_len < 1 or padding_len > 16:
+            raise ValueError("Incorrect padding.")
+        return msg[:-padding_len]
 
 class LSB:
     MAX_BIT_LENGTH = 32
@@ -43,7 +50,7 @@ class LSB:
 
     def put_bit(self, bit):
         v = self.image[self.cur_x, self.cur_y][self.cur_channel]
-        binaryV = bin(v)[2:]
+        binaryV = bin(v)[2:].zfill(8)
         if binaryV[-1] != bit:
             binaryV = binaryV[:-1] + bit
         self.image[self.cur_x, self.cur_y][self.cur_channel] = int(binaryV, 2)
@@ -167,31 +174,34 @@ class Activity:
         combined_data_with_zip = obj.extract()
         cipher_text_len = int.from_bytes(combined_data_with_zip[:8], 'big')  # Use 8 bytes for length to support larger files
         cipher_text = combined_data_with_zip[8:8+cipher_text_len]
-        decrypted_message = cipher.decrypt(cipher_text)
         
-        print("Decrypted message:", decrypted_message)  # Display the decrypted message to the terminal
+        try:
+            decrypted_message = cipher.decrypt(cipher_text)
+            print("Decrypted message:", decrypted_message)  # Display the decrypted message to the terminal
+            
+            # Save the decrypted message to a file only if the --save flag is provided
+            if self.save:
+                try:
+                    with open(self.get_unique_filename("decrypted_message.txt"), "w", encoding="utf-8") as f:
+                        f.write(decrypted_message)
+                    print("Decrypted message saved as:", self.get_unique_filename("decrypted_message.txt"))
+                except Exception as e:
+                    print("An error occurred while writing to the file:", str(e))
+            else:
+                print("No --save flag provided to save the message.")
         
-        # Save the decrypted message to a file only if the --save flag is provided
-        if self.save:
-            try:
-                with open(self.get_unique_filename("decrypted_message.txt"), "w", encoding="utf-8") as f:
-                    f.write(decrypted_message)
-                print("Decrypted message saved as:", self.get_unique_filename("decrypted_message.txt"))
-            except Exception as e:
-                print("An error occurred while writing to the file:", str(e))
-        else:
-            print("No --save flag provided to save the message.")
-        
-        # Save the zip file to a file
-        if self.zip_file_path:
-            try:
-                with open(self.zip_file_path, 'wb') as f:
-                    f.write(combined_data_with_zip[8+cipher_text_len:])
-                print("Zip file saved:", self.zip_file_path)
-            except Exception as e:
-                print("An error occurred while writing to the zip file:", str(e))
-        else:
-            print("No --zip <filename.zip> flag was provided for saving the zip file.")
+            # Save the zip file to a file
+            if self.zip_file_path:
+                try:
+                    with open(self.zip_file_path, 'wb') as f:
+                        f.write(combined_data_with_zip[8+cipher_text_len:])
+                    print("Zip file saved:", self.zip_file_path)
+                except Exception as e:
+                    print("An error occurred while writing to the zip file:", str(e))
+            else:
+                print("No --zip <filename.zip> flag was provided for saving the zip file.")
+        except ValueError as e:
+            print("An error occurred during decryption:", str(e))
 
     def execute(self):
         if self.action == "encode":
@@ -227,6 +237,7 @@ if __name__ == "__main__":
         app.execute()
     except Exception as e:
         print("An error occurred:", str(e))
+
 
 
 
