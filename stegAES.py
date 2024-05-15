@@ -9,9 +9,9 @@ import base64
 
 class AESCipher:
     def __init__(self, key):
-        if len(key) != 32:
-            raise ValueError("Key must be 32 characters.")
-        self.key = key.encode('utf-8')  # Ensure the key is in bytes
+        if len(key) != 64:
+            raise ValueError("Key must be 64 hexadecimal characters (32 bytes).")
+        self.key = bytes.fromhex(key)  # Convert hex key to bytes
 
     def encrypt(self, msg):
         msg = msg.encode('utf-8')  # Convert message to bytes
@@ -152,14 +152,14 @@ class Activity:
             raise ValueError("Key file not found.")
 
     def generate_key(self):
-        key = secrets.token_hex(16)  # Generate a random hex key of 32 characters
+        key = secrets.token_hex(32)  # Generate a random hex key of 64 characters (32 bytes)
         with open(self.key_file, "w", encoding="utf-8") as key_file:
             key_file.write(key)
 
     def cipher(self):
         key = self.read_key_from_file()  # Read the key from the file
-        if len(key) != 32:
-            raise ValueError("Key must be 32 characters.")
+        if len(key) != 64:
+            raise ValueError("Key must be 64 hexadecimal characters.")
         return AESCipher(key)
 
     def encode(self):
