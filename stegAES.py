@@ -30,6 +30,21 @@ class AESCipher:
             raise ValueError("Incorrect decryption key or corrupted data.")
         return unpadded_msg
 
+    def encrypt_bytes(self, data):
+        padded_data = self._pad(data)
+        iv = get_random_bytes(16)  # Generate a random IV for CBC mode
+        cipher = AES.new(self.key, AES.MODE_CBC, iv)
+        return iv + cipher.encrypt(padded_data)
+
+    def decrypt_bytes(self, cipher_text):
+        iv = cipher_text[:16]  # Extract IV from cipher text
+        cipher = AES.new(self.key, AES.MODE_CBC, iv)
+        decrypted_data = cipher.decrypt(cipher_text[16:])
+        try:
+            return self._unpad(decrypted_data)
+        except ValueError:
+            raise ValueError("Incorrect decryption key or corrupted data.")
+
     def _pad(self, msg):
         padding_len = 16 - (len(msg) % 16)
         return msg + bytes([padding_len] * padding_len)
@@ -150,13 +165,18 @@ class Activity:
     def encode(self):
         cipher = self.cipher()
         cipher_text = cipher.encrypt(self.message)
-        combined_data = len(cipher_text).to_bytes(8, 'big') + cipher_text  # Use 8 bytes for length to support larger files
+        
+        # Read and encrypt the zip file contents
+        encrypted_zip = b''
         if self.zip_file_path:
             with open(self.zip_file_path, 'rb') as f:
                 zip_contents = f.read()
-            if len(zip_contents) > (os.path.getsize(self.image_path) * 3) // 8:
+            encrypted_zip = cipher.encrypt_bytes(zip_contents)
+            if len(encrypted_zip) > (os.path.getsize(self.image_path) * 3) // 8:
                 raise ValueError("Zip file too large for the host image.")
-            combined_data += zip_contents
+        
+        combined_data = len(cipher_text).to_bytes(8, 'big') + cipher_text + len(encrypted_zip).to_bytes(8, 'big') + encrypted_zip
+        
         image = cv2.imread(self.image_path)
         obj = LSB(image)
         obj.embed(combined_data)
@@ -171,9 +191,12 @@ class Activity:
         encoded_image = cv2.imread(self.image_path)
         obj = LSB(encoded_image)
         
-        combined_data_with_zip = obj.extract()
-        cipher_text_len = int.from_bytes(combined_data_with_zip[:8], 'big')  # Use 8 bytes for length to support larger files
-        cipher_text = combined_data_with_zip[8:8+cipher_text_len]
+        combined_data = obj.extract()
+        cipher_text_len = int.from_bytes(combined_data[:8], 'big')
+        cipher_text = combined_data[8:8+cipher_text_len]
+        
+        encrypted_zip_len = int.from_bytes(combined_data[8+cipher_text_len:16+cipher_text_len], 'big')
+        encrypted_zip = combined_data[16+cipher_text_len:16+cipher_text_len+encrypted_zip_len]
         
         try:
             decrypted_message = cipher.decrypt(cipher_text)
@@ -189,15 +212,16 @@ class Activity:
                     print("An error occurred while writing to the file:", str(e))
             else:
                 print("No --save flag provided to save the message.")
-        
-            # Save the zip file to a file
-            if self.zip_file_path:
+            
+            # Decrypt and save the zip file to a file
+            if encrypted_zip:
                 try:
+                    decrypted_zip = cipher.decrypt_bytes(encrypted_zip)
                     with open(self.zip_file_path, 'wb') as f:
-                        f.write(combined_data_with_zip[8+cipher_text_len:])
+                        f.write(decrypted_zip)
                     print("Zip file saved:", self.zip_file_path)
                 except Exception as e:
-                    print("An error occurred while writing to the zip file:", str(e))
+                    print("An error occurred while decrypting or writing the zip file:", str(e))
             else:
                 print("No --zip <filename.zip> flag was provided for saving the zip file.")
         except ValueError as e:
@@ -237,6 +261,7 @@ if __name__ == "__main__":
         app.execute()
     except Exception as e:
         print("An error occurred:", str(e))
+
 
 
 
