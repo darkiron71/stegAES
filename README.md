@@ -1,5 +1,5 @@
 # stegAES.py
-# Steganography with AES-128 Encryption -- Supports encrypted messages and zip files
+# Steganography with AES-256 Encryption -- Supports encrypted messages and zip files
 
 ## Requirements
 
@@ -22,7 +22,7 @@ stegAES supports embedding both text-based messages and zip files into an image.
 
 The stegAES.py script offers a comprehensive solution combining AES encryption with steganography techniques, designed for secure message transmission and concealed data embedding within images. Here's a breakdown of its functionalities:
 
-AES Encryption: The script implements the AES (Advanced Encryption Standard) algorithm for secure message encryption. AESCipher class provides methods for encrypting and decrypting messages using a 32-character key. It ensures data confidentiality by employing symmetric key encryption and CBC (Cipher Block Chaining) mode.
+AES Encryption: The script implements the AES (Advanced Encryption Standard) algorithm for secure message encryption. AESCipher class provides methods for encrypting and decrypting messages using a 64-character key. It ensures data confidentiality by employing symmetric key encryption and CBC (Cipher Block Chaining) mode.
 Steganography: LSB (Least Significant Bit) steganography is utilized for hiding encrypted data within image files. LSB class facilitates embedding data into images by replacing the least significant bits of pixel values, ensuring minimal visual distortion.
 
 Encoding: The script allows users to encode a secret message into an image along with an optional zip file. It encrypts the message, combines it with the zip file (if provided), embeds the combined data into the image using LSB steganography, and saves the resulting encoded image.
