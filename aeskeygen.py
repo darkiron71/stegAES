@@ -1,8 +1,7 @@
 import os
 import secrets
-import string
 
-def generate_aes_key(key_size=16):  # Changed default key size to 16 bytes (128 bits)
+def generate_aes_key(key_size=32):  # Set default key size to 32 bytes (256 bits)
     # Generate a random key of the specified length (in bytes)
     key = secrets.token_hex(key_size)
     return key
@@ -27,7 +26,6 @@ def write_aes_key_to_file(aes_key, file_name='aes_key.txt'):
     print(f"Key file generated: {file_name}")
     print(f"AES Key: {aes_key}")
 
-# Generate AES key (size: 16 bytes) and write it to file
-aes_key = generate_aes_key(16)  # Generate a 16-byte AES key
+# Generate AES key (size: 32 bytes) and write it to file
+aes_key = generate_aes_key(32)  # Generate a 32-byte AES key (256 bits)
 write_aes_key_to_file(aes_key)
-
