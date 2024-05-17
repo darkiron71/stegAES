@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encode</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h2>Encode</h2>
+        <form id="encode-form" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="image">Image:</label>
+                <input type="file" class="form-control" id="image" name="image" required>
+            </div>
+            <div class="form-group">
+                <label for="message">Message:</label>
+                <textarea class="form-control" id="message" name="message" rows="4" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="zip_file">Zip File (optional):</label>
+                <input type="file" class="form-control" id="zip_file" name="zip_file">
+            </div>
+            <div class="form-group">
+                <label for="key_file">Key File:</label>
+                <input type="file" class="form-control" id="key_file" name="key_file" required>
+                <button type="button" class="btn btn-secondary mt-2" id="generate-key">Generate Key</button>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+
+        <div class="progress mt-3">
+            <div id="progress-bar-upload" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">Upload Progress</div>
+        </div>
+        
+        <div id="error-message" class="alert alert-danger mt-3" style="display: none;"></div>
+        
+        <button class="btn btn-secondary mt-3" onclick="history.back()">Back</button>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('#generate-key').on('click', function () {
+                axios.post('/generate_key')
+                    .then(function (response) {
+                        const url = window.URL.createObjectURL(new Blob([response.data]));
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'aes_key.txt';
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                    })
+                    .catch(function (error) {
+                        console.error('Error generating key:', error);
+                        let errorMessage = 'Error generating key. Please try again.';
+                        if (error.response && error.response.data.error && error.response.data.error.includes("ValueError: Image too small to embed data.")) {
+                            errorMessage = "Error: Image too small to embed data.";
+                        }
+                        $('#error-message').text(errorMessage).show();
+                    });
+            });
+
+            $('#encode-form').on('submit', function (e) {
+                e.preventDefault();
+
+                let formData = new FormData(this);
+
+                axios.post('/encode', formData, {
+                    onUploadProgress: function (progressEvent) {
+                        let percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                        $('#progress-bar-upload').css('width', percentCompleted + '%').attr('aria-valuenow', percentCompleted);
+                    }
+                }).then(function (response) {
+                    window.location.href = response.data.download_url;
+                }).catch(function (error) {
+                    console.error('Error during encoding:', error);
+                    let errorMessage = 'An unexpected error occurred. Please try again. If you receive an error try using either a larger host image or smaller zip file';
+                    if (error.response && error.response.data.error && error.response.data.error.includes("Image too small to embed data")) {
+                        errorMessage = "Error: Image too small to embed data.";
+                    }
+                    $('#error-message').text(errorMessage).show();
+                });
+            });
+        });
+    </script>
+</body>
+</html>

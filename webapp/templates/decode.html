@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decode</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h2>Decode</h2>
+        <form id="decode-form" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="image">Image:</label>
+                <input type="file" class="form-control" id="image" name="image" required>
+            </div>
+            <div class="form-group">
+                <label for="key_file">Key File:</label>
+                <input type="file" class="form-control" id="key_file" name="key_file" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+
+        <div class="progress mt-3">
+            <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">Upload Progress</div>
+        </div>
+        
+        <div id="error-message" class="alert alert-danger mt-3" style="display: none;"></div>
+        
+        <button class="btn btn-secondary mt-3" onclick="history.back()">Back</button>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('#decode-form').on('submit', function (e) {
+                e.preventDefault();
+                let formData = new FormData(this);
+                axios.post('/decode', formData, {
+                    onUploadProgress: function (progressEvent) {
+                        let percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                        $('#progress-bar').css('width', percentCompleted + '%').attr('aria-valuenow', percentCompleted);
+                    }
+                }).then(function (response) {
+                    if (response.data.download_url) {
+                        window.location.href = response.data.download_url;
+                    } else {
+                        throw new Error("File processing failed.");
+                    }
+                }).catch(function (error) {
+                    console.error('An unexpected error occurred:', error);
+                    let errorMessage = 'An unexpected error occurred. Please try again. Be sure that you are using the correct Image file and Key File';
+                    if (error.response && error.response.data.error && error.response.data.error.includes("Incorrect decryption key or corrupted data")) {
+                        errorMessage = "Error: Incorrect decryption key or corrupted data.";
+                    }
+                    $('#error-message').text(errorMessage).show();
+                });
+            });
+        });
+    </script>
+</body>
+</html>
