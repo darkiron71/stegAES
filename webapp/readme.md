@@ -1,5 +1,5 @@
 #To run flash app. python3 app.py
-# Visit http://127.0.0.1:5000
+# Visit https://127.0.0.1:8000
 
 # Webapp runs with same functionality as the python cli version
 # There are two version of the app.py file. There is app.py and app_auto_purge.py 
