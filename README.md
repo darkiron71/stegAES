@@ -111,7 +111,7 @@ black_marble.png = 24 MB NASA sourced image for example host image file
 
 ![Alt Text](https://github.com/darkiron71/stegAES/blob/main/WebGUI.png)
 
-Included in the main directory is a webapp directory which has the necessary requirements to run a self hosted https server. This provides a interactive GUI interface.     
+Included in the main directory is a webapp directory which has the necessary requirements to run a self hosted https server. This provides an interactive GUI interface.     
 
 ## Configuration and Setup: 
 
