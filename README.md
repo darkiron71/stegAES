@@ -62,11 +62,9 @@ This versatile tool finds applications in secure communication, data hiding, and
 
 ## How-To use stegAES.py
 
-  Make run.sh executable in root directory and in the webapp diretory. 
+  Make run.sh executable
 
       chmod +x run.sh 
-      cd /webapp
-      chmod +x run.sh
   
   Auto Run Guide:
 
@@ -154,8 +152,18 @@ The application initializes with Flask through the use of gunicorn, configuring 
 
 Change into the webapp directory. Begin the interactive startup script labled: start.py. The start up script will check to see if there is already an SSL certificate in the root directory. If no certificate exist, it will auto create the SSL certs and place it in the directory. This allows for an encrypted https connection. 
 
-    cd /webapp
-    python3 run.sh
+Auto:
+From the main directory execute the run.sh script and select #2 for webapp
+    
+    ./run.sh
+
+Manual: 
+Change to the webapp directory.
+
+     cd webapp
+     python3 start.py
+
+You can adjust the gunicorn server parameters in the start.py file. 
 
 Follow prompts to pick your appropriate version. Version#1 will auto purge aes_key.txt files and encoded images in the uploads folder every 2 minutes and after every decoding process. Version#2 will keep the latest aes_key.txt file and all encoded images in the uploads folder. You will need to delete these manually. 
 
