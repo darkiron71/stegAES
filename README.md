@@ -3,8 +3,7 @@
 
 ## Requirements
 
-    python3 
-    pip3 
+    python3 (run.sh script will auto check and attempt to install if able)  
 
 ## Dependencies 
 
@@ -19,7 +18,29 @@
 
 ## Install Dependencies 
 
-    pip install -r requirements.txt
+Auto
+
+    chmod +x run.sh
+    ./run.sh
+
+Manual:
+
+    pip install -r requirements.txt 
+    
+*If you receive errors while running stegAES.py or run.sh you may need to add flask and gunicorn to your PATH
+    
+*On Linux or macOS, add the export line to your .bashrc, .bash_profile, or .zshrc:
+
+    echo 'export PATH=$PATH:/path/to/executable_folder' >> ~/.bashrc
+
+*You will need to do this for both gunicorn and flask if terminal says it is unable to find it. You can typically find the executable with the 'which' command.
+
+*Ex:
+
+    which gunicorn
+
+* On Windows, you can add it through the System Properties -> Environment Variables, then edit the PATH variable and add the path to the executable folder.
+
 
 ## About
 
@@ -40,6 +61,18 @@ This versatile tool finds applications in secure communication, data hiding, and
 
 
 ## How-To use stegAES.py
+
+  Make run.sh executable in root directory and in the webapp diretory. 
+
+      chmod +x run.sh 
+      cd /webapp
+      chmod +x run.sh
+  
+  Auto Run Guide:
+
+    ./run.sh
+
+  Manual:
 
   Generating an aes_key: First you must genreate your secret aes_key which will be used to encrypt/decrypt the data (KEEP THIS SAFE)
 
@@ -121,7 +154,8 @@ The application initializes with Flask through the use of gunicorn, configuring 
 
 Change into the webapp directory. Begin the interactive startup script labled: start.py. The start up script will check to see if there is already an SSL certificate in the root directory. If no certificate exist, it will auto create the SSL certs and place it in the directory. This allows for an encrypted https connection. 
 
-    python3 start.py
+    cd /webapp
+    python3 run.sh
 
 Follow prompts to pick your appropriate version. Version#1 will auto purge aes_key.txt files and encoded images in the uploads folder every 2 minutes and after every decoding process. Version#2 will keep the latest aes_key.txt file and all encoded images in the uploads folder. You will need to delete these manually. 
 
