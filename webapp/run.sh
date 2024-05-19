@@ -1,5 +1,39 @@
 #!/bin/bash
 
+# Function to install Python 3
+install_python() {
+    # Detect the platform (similar to $OSTYPE)
+    UNAME="$(uname -s)"
+    case "${UNAME}" in
+        Linux*)     OS=Linux;;
+        Darwin*)    OS=Mac;;
+        CYGWIN*|MINGW*|MSYS*|MINGW*) OS=Windows;;
+        *)          OS="UNKNOWN:${UNAME}"
+    esac
+
+    echo "Detected OS: ${OS}"
+
+    if [ "$OS" = "Linux" ]; then
+        # Assuming Debian-based system; modify as needed for other distros
+        sudo apt-get update
+        sudo apt-get install -y python3 python3-pip
+    elif [ "$OS" = "Mac" ]; then
+        # Assumes Homebrew is installed
+        brew install python3
+    elif [ "$OS" = "Windows" ]; then
+        # Installing Python on Windows via a script might require more steps or admin privileges
+        echo "Please install Python 3 from https://www.python.org or enable the Windows Subsystem for Linux (WSL) and install Python through a Linux distribution."
+    fi
+}
+
+# Check if Python 3 is installed
+if ! command -v python3 &> /dev/null; then
+    echo "Python 3 could not be found, installing..."
+    install_python
+else
+    echo "Python 3 is already installed."
+fi
+
 # Default path for the virtual environment
 DEFAULT_VENV_PATH="./.venv"
 # Get the directory of the current script
