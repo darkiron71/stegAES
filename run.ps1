@@ -52,7 +52,7 @@ $DefaultVenvPath = ".\.venv"
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 $PythonScriptPath = "$ScriptDir\start.py"
 $RequirementsPath = "$ScriptDir\requirements.txt"
-$env:PYTHONPATH = "$env:PYTHONPATH;$HOME\Downloads\stegAES-main;$HOME\Downloads\stegAES"
+$env:PYTHONPATH = "$env:PYTHONPATH;$env:USERPROFILE\Downloads\stegAES-main;$env:USERPROFILE\Downloads\stegAES"
 
 # Check if a custom path is provided; if not, use the default
 $VenvPath = if ($args.Length -gt 0) { $args[0] } else { $DefaultVenvPath }
@@ -60,7 +60,7 @@ $VenvPath = if ($args.Length -gt 0) { $args[0] } else { $DefaultVenvPath }
 # Function to setup virtual environment and install requirements
 function Setup-Venv {
     Write-Output "Setting up Python virtual environment at $VenvPath..."
-    python3 -m venv $VenvPath
+    python -m venv $VenvPath
     & "$VenvPath\Scripts\Activate.ps1"
     pip install -r $RequirementsPath
     # Verifying that Flask and Gunicorn are correctly installed and executable paths are available
