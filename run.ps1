@@ -38,7 +38,7 @@ function Install-Pip {
 }
 
 # Check if Python 3 is installed
-if (-not (Get-Command python3 -ErrorAction SilentlyContinue)) {
+if (-not (Get-Command python -ErrorAction SilentlyContinue)) {
     Write-Output "Python 3 could not be found, installing..."
     Install-Python
     Install-Pip
@@ -95,3 +95,4 @@ python $PythonScriptPath
 
 # Optionally: Remove the virtual environment bin from PATH if desired
 $env:PATH = $env:PATH -replace [regex]::Escape("$VenvPath\Scripts;"), ""
+
