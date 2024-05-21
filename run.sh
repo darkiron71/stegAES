@@ -40,6 +40,8 @@ DEFAULT_VENV_PATH="./.venv"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 PYTHON_SCRIPT_PATH="$SCRIPT_DIR/start.py"
 REQUIREMENTS_PATH="$SCRIPT_DIR/requirements.txt"
+export PYTHONPATH=$PYTHONPATH:$HOME/Downloads/stegAES-main
+export PYTHONPATH=$PYTHONPATH:$HOME/Downloads/stegAES
 
 # Check if a custom path is provided; if not, use the default
 VENV_PATH="${1:-$DEFAULT_VENV_PATH}"
